@@ -1,4 +1,5 @@
-(ns drytomic.core)
+(ns drytomic.core
+  (:require [clojure.edn :as edn]))
 
 (defn- ident-key-ns [tx-map]
   (or  (some-> tx-map :db/ident namespace keyword)
@@ -11,13 +12,15 @@
 ;; More about graphviz settings:
 ;; http://www.graphviz.org/pdf/neato.1.pdf
 (defn- dot-file-wrapper [graph-str & opts]
-  (str "digraph documentor_graph{\n"
-       "node [shape=record];\n"
+  (str "//graph init"
+       "digraph documentor_graph{\n"
+       "\n//options:"
+       "node [shape=record];\n" ;; square nodes
        "overlap=false;\n"       ;; nodes will not overlap
-       "ratio=.618033989;\n"    ;;golden ratio / 1
-       "///////end options///////\n\n\n"
+       "ratio=.618033989;\n"    ;; golden ratio / 1
+       "\n\n"
        graph-str
-       "}"))
+       "\n}"))
 
 (defn- uml-str [uml-map]
   (let [title (-> uml-map key)
@@ -31,7 +34,7 @@
 (defn- uml-strs [uml-maps]
   (map uml-str uml-maps))
 
-(defn- txs->edge-set [tx-maps]
+(defn txs->edge-set [tx-maps]
   (->> (for [source tx-maps
              target tx-maps
              :when (and (= (:db/valueType source) :db.type/ref)
@@ -45,7 +48,7 @@
   (map (fn [[source target]]
          (str "\"" source "\" -> \"" target "\";\n")) edge-set))
 
-(defn- txs->uml-map [txs]
+(defn txs->uml-map [txs]
   (->> txs
        (group-by ident-key-ns)
        vals
@@ -59,14 +62,22 @@
 ;; Input should be a seq of tx-maps.
 ;; E.g. http://docs.datomic.com/schema.html
 
-(defn erd-producer [in-path out-path]
-  (let [txs (-> in-path slurp read-string)
-        umlstrs  (->> txs txs->uml-map uml-strs)
-        edgestrs (->> txs txs->edge-set edge-strs)]
+(defn txs->dot-str [txs]
+  (let [umlstrs  (-> txs txs->uml-map uml-strs)
+        edgestrs (-> txs txs->edge-set edge-strs)]
     (->> (str "//nodes:\n"
               (apply str umlstrs)
               "\n\n"
               "//edges:\n"
               (apply str edgestrs))
-         dot-file-wrapper
+         dot-file-wrapper)))
+
+(defn erd-producer [in-path out-path & optional-tfn]
+  "Handles I/O for erd-production, and possibly can transform the map for you."
+  (let [t-fxn (or (first optional-tfn) identity)]
+    (->> in-path
+         slurp
+         (edn/read-string {:default identity})
+         t-fxn
+         txs->dot-str
          (spit out-path))))

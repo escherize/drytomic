@@ -1,6 +1,12 @@
-pom.xml
+*.txt
 *jar
-/lib/
-/classes/
-/targets/
+*test-*-file*
 .lein-deps-sum
+/classes/
+/lib/
+/target/
+/targets/
+pom.xml
+/.lein-failures
+/.nrepl-port
+/pom.xml.asc
