@@ -77,7 +77,7 @@
   (let [t-fxn (or (first optional-tfn) identity)]
     (->> in-path
          slurp
-         (edn/read-string {:default identity})
+         (edn/read-string {:default (fn [tag val] (identity val))})
          t-fxn
          txs->dot-str
          (spit out-path))))
