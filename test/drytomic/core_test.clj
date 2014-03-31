@@ -32,11 +32,11 @@
     (let [dot-str (setup-input (str  [{:db/ident     :traffic-segment/start}]))]
       (erd-producer input-file-path output-file-path)
       (is (= (slurp output-file-path)
-             "//graph initdigraph documentor_graph{\n\n//options:node [shape=record];\noverlap=false;\nratio=.618033989;\n\n\n//nodes:\n\":traffic-segment\" [shape=record, label=\"{:traffic-segment | \\n:traffic-segment/start}\"];\n\n\n//edges:\n\n}"))))
+             "//graph init\ndigraph documentor_graph{\n\n//options:\nnode [shape=record];\noverlap=false;\nratio=.618033989;\n\n\n//nodes:\n\":traffic-segment\" [shape=record, label=\"{:traffic-segment | \\n:traffic-segment/start}\"];\n\n\n//edges:\n\n}"))))
 
   (testing "erd-producer WITH a tfn (transformation fn)"
     (let [dot-str (setup-input (str  [[{:db/ident     :traffic-segment/start}]]))]
       (erd-producer input-file-path output-file-path first)
       (is (= (slurp output-file-path)
-             "//graph initdigraph documentor_graph{\n\n//options:node [shape=record];\noverlap=false;\nratio=.618033989;\n\n\n//nodes:\n\":traffic-segment\" [shape=record, label=\"{:traffic-segment | \\n:traffic-segment/start}\"];\n\n\n//edges:\n\n}"))))
+             "//graph init\ndigraph documentor_graph{\n\n//options:\nnode [shape=record];\noverlap=false;\nratio=.618033989;\n\n\n//nodes:\n\":traffic-segment\" [shape=record, label=\"{:traffic-segment | \\n:traffic-segment/start}\"];\n\n\n//edges:\n\n}"))))
   )
