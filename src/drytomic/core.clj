@@ -12,9 +12,9 @@
 ;; More about graphviz settings:
 ;; http://www.graphviz.org/pdf/neato.1.pdf
 (defn- dot-file-wrapper [graph-str & opts]
-  (str "//graph init"
+  (str "//graph init\n"
        "digraph documentor_graph{\n"
-       "\n//options:"
+       "\n//options:\n"
        "node [shape=record];\n" ;; square nodes
        "overlap=false;\n"       ;; nodes will not overlap
        "ratio=.618033989;\n"    ;; golden ratio / 1
