@@ -1,4 +1,4 @@
-(defproject drytomic "0.3.3"
+(defproject drytomic "0.3.5"
   :description "A diagram creator for datomic schematas."
   :url "http://github.com/escherize/drytomic"
   :license {:name "Eclipse Public License"

@@ -72,12 +72,19 @@
               (apply str edgestrs))
          dot-file-wrapper)))
 
-(defn erd-producer [in-path out-path & optional-tfn]
-  "Handles I/O for erd-production, and possibly can transform the map for you."
-  (let [t-fxn (or (first optional-tfn) identity)]
-    (->> in-path
-         slurp
-         (edn/read-string {:default (fn [tag val] (identity val))})
-         t-fxn
-         txs->dot-str
-         (spit out-path))))
+(defn erd-producer "Handles I/O for erd-production, and can transform the map for you."
+  ([in-path]
+     (let [out-path (-> in-path
+                        (clojure.string/split #"\.")
+                        first
+                        (str ".dot"))]
+       (erd-producer in-path out-path identity)))
+  ([in-path out-path]
+     (erd-producer in-path out-path identity))
+  ([in-path out-path transform-fxn]
+     (->> in-path
+          slurp
+          (edn/read-string {:default (fn [tag val] (identity val))})
+          transform-fxn ;; transform weirdness into [ {tx} {tx} {tx}]
+          txs->dot-str
+          (spit out-path))))
